@@ -1,0 +1,257 @@
+{
+  "info": {
+    "name": "IoT - JWT Bearer",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Đăng nhập nhận JWT, tự lưu access_token cho các API tiếp theo. Điền username/password trên máy của bạn. Không chia sẻ token hoặc mật khẩu. Bật/tắt gửi lệnh thật; chỉ gửi khi muốn điều khiển phần cứng."
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8080",
+      "type": "string"
+    },
+    {
+      "key": "username",
+      "value": "admin",
+      "type": "string"
+    },
+    {
+      "key": "password",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "device_key",
+      "value": "lamp1",
+      "type": "string"
+    },
+    {
+      "key": "device_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "request_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "expires_at",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Đăng nhập",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/auth/login",
+        "description": "POST JSON username/password; trả accessToken, tokenType, expiresIn, expiresAt và thông tin tài khoản. Không dùng CSRF hoặc cookie.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "auth": {
+          "type": "noauth"
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.collectionVariables.unset(\"access_token\");",
+              "pm.collectionVariables.unset(\"expires_at\");",
+              "pm.request.body.update(JSON.stringify({ username: pm.variables.get(\"username\"), password: pm.variables.get(\"password\") }));"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Login succeeds\", () => pm.response.to.have.status(200));",
+              "if (pm.response.code === 200) {",
+              "    const data = pm.response.json();",
+              "    pm.test(\"JWT response\", () => { pm.expect(data.accessToken).to.be.a(\"string\"); pm.expect(data.tokenType).to.eql(\"Bearer\"); pm.expect(data.expiresIn).to.be.above(0); });",
+              "    pm.collectionVariables.set(\"access_token\", data.accessToken);",
+              "    pm.collectionVariables.set(\"expires_at\", data.expiresAt);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Danh sách thiết bị",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/api/devices"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.collectionVariables.unset(\"device_id\");",
+              "if (pm.response.code === 200) {",
+              "    const device = pm.response.json().find(item => item.deviceKey === pm.variables.get(\"device_key\"));",
+              "    if (device) pm.collectionVariables.set(\"device_id\", String(device.id));",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Số đo mới nhất",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/api/sensor-data/latest"
+      }
+    },
+    {
+      "name": "Biểu đồ",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/api/sensor-data/chart?limit=20"
+      }
+    },
+    {
+      "name": "Lịch sử cảm biến",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/api/sensor-data/history?page=0&size=20&sort=createdAt,desc"
+      }
+    },
+    {
+      "name": "Trạng thái thiết bị",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/api/devices/{{device_id}}/status"
+      }
+    },
+    {
+      "name": "Lịch sử điều khiển",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/api/devices/action-history?page=0&size=20&sort=createdAt,desc"
+      }
+    },
+    {
+      "name": "Điều khiển thật - chỉ gửi khi muốn đổi trạng thái đèn",
+      "item": [
+        {
+          "name": "Bật đèn",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/devices/{{device_id}}/control",
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"action\": \"ON\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 202) pm.collectionVariables.set(\"request_id\", pm.response.json().requestId);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Tắt đèn",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/devices/{{device_id}}/control",
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"action\": \"OFF\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 202) pm.collectionVariables.set(\"request_id\", pm.response.json().requestId);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Kết quả lệnh",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/commands/{{request_id}}"
+          }
+        }
+      ]
+    }
+  ]
+}

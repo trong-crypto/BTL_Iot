@@ -1,0 +1,30 @@
+.login-page {
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+}
+
+.login-card {
+    width: min(420px, 100%);
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+}
+
+.login-card p {
+    margin: 8px 0 28px;
+    color: var(--muted);
+}
+
+.login-card .btn {
+    width: 100%;
+}
+
+#loginError {
+    color: #b42318;
+    margin: 0 0 16px;
+}

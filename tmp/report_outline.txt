@@ -1,0 +1,456 @@
+P 000 [Normal] HỌC VIỆN CÔNG NGHỆ BƯU CHÍNH VIỄN THÔNG
+P 001 [Normal] KHOA CÔNG NGHỆ THÔNG TIN 1
+P 002 [Normal] ____________________
+P 006 [Normal] BÁO CÁO BÀI TẬP LỚN
+P 007 [Normal] IOT VÀ ỨNG DỤNG
+T 010 [3x2]
+  00: Sinh viên thực hiện || : Đào Viết Trọng
+  01: Mã sinh viên || : B23DCCN846
+  02: Giảng viên hướng dẫn || : TS. Nguyễn Quốc Uy
+P 016 [Heading 1] Hà Nội  - 2026
+P 017 [Heading 1] CHƯƠNG 1: TỔNG QUAN ĐỀ TÀI
+P 018 [Heading 2] 1.1. Bối cảnh và lý do thực hiện
+P 019 [Normal] Với sự phát triển mạnh mẽ của Internet vạn vật (IoT), các hệ thống nhà thông minh (Smart Home) không chỉ giúp con người theo dõi môi trường sống mà còn tối ưu hóa việc điều khiển các thiết bị điện. Đề tài này được thực hiện nhằm ứng dụng các công nghệ IoT để g
+P 020 [Heading 2] 1.2. Mục tiêu của hệ thống
+P 021 [Normal] Hệ thống được xây dựng hướng tới các mục tiêu cụ thể sau:
+P 022 [Normal] Thu thập dữ liệu: Đo lường các chỉ số nhiệt độ, độ ẩm (từ cảm biến DHT11) và mức độ ánh sáng (từ cảm biến quang trở).
+P 023 [Normal] Điều khiển thiết bị: Cho phép người dùng bật/tắt 2 bóng đèn từ xa thông qua giao diện Web.
+P 024 [Normal] Lưu trữ dữ liệu: Lưu lại lịch sử các thông số môi trường vào cơ sở dữ liệu MySQL để phục vụ việc thống kê.
+P 025 [Normal] Giám sát thời gian thực: Dữ liệu hiển thị trên Web App phải được cập nhật liên tục (Real-time).
+P 026 [Heading 2] 1.3. Yêu cầu phi chức năng (Ràng buộc kỹ thuật)
+P 027 [Normal] Tính song song (Non-blocking): Yêu cầu quan trọng nhất của hệ thống là việc điều khiển bóng đèn và việc đọc dữ liệu cảm biến phải hoạt động hoàn toàn độc lập. Lệnh bật/tắt đèn phải được thực thi ngay lập tức mà không bị trễ hay gián đoạn bởi chu kỳ đọc của cảm
+P 028 [Normal] Giao thức truyền thông: Sử dụng MQTT để đảm bảo tốc độ truyền tải nhanh, nhẹ và phù hợp với thiết bị vi điều khiển.
+P 029 [Heading 2] 1.4. Công nghệ được sử dụng
+T 030 [8x2]
+  00: Nhóm || Thành phần
+  01: Phần cứng || ESP32, DHT11, cảm biến ánh sáng(LDR),LED, điện trở và dây nối
+  02: Frontend || HTML, CSS, JavaScripts
+  03: Backend || Java(SpringBoot)
+  04: Giao tiếp web || REST API, WebSocket
+  05: Giao tiếp thiết bị || MQTT
+  06: MQTT Broker || Eclipse Mosquitto
+  07: Cơ sở dữ liệu || MySQL
+P 032 [Heading 1] CHƯƠNG 2: THIẾT KẾ TỔNG QUAN
+P 033 [Heading 2] 2.1. Kiến trúc tổng thể
+P 034 [Normal] Hệ thống được thiết kế theo mô hình nhiều lớp, trong đó ESP32 đóng vai trò là thiết bị IoT trung tâm thực hiện thu thập dữ liệu từ cảm biến và điều khiển các thiết bị chấp hành. Dữ liệu từ ESP32 được truyền qua mạng Wi-Fi bằng giao thức MQTT đến MQTT Broker Ec
+P 035 [Normal] Phía giao diện web sử dụng Thymeleaf kết hợp với HTML, CSS và JavaScript. Bootstrap được sử dụng để xây dựng giao diện, trong khi Chart.js được sử dụng để biểu diễn dữ liệu cảm biến dưới dạng biểu đồ. WebSocket kết hợp với STOMP được sử dụng để truyền dữ liệu 
+P 036 [Normal] Đối với chức năng điều khiển, người dùng thực hiện thao tác bật/tắt hai bóng đèn trên giao diện web. Yêu cầu điều khiển được gửi đến Spring Boot, sau đó backend publish lệnh điều khiển lên MQTT Broker. ESP32 subscribe các topic điều khiển tương ứng, thực hiện 
+P 039 [Normal] Hình 2.1. Kiến trúc tổng quan của hệ thống
+P 044 [Heading 2] 2.2. Thiết kế các lớp kiến trúc
+T 045 [6x3]
+  00: Lớp || Thành Phần || Trách nhiệm chính
+  01: Thiết bị || ESP32, DHT11, LDR, 2 bóng đèn led || Thu thập nhiệt độ, độ ẩm, ánh sáng và thực thi bật/tắt bóng đèn
+  02: Giao tiếp Iot || Wifi, MQTT, Eclipse Mosquitto || Truyền dữ liệu cảm biến, lệnh điều khiển và trạng thái thiết bị theo mô hình Publish/Subscribe
+  03: Ứng dụng || Spring Boot, Spring Web, MQTT Client, WebSocket/STOMP || Tiếp nhận dữ liệu MQTT, xử lý nghiệp vụ, cung cấp REST API, truyền dữ liệu realtime và gửi lệnh điều khiển
+  04: Dữ liệu || MySQL, Spring Data JPA, Hibernate || Lưu trữ thông tin người dùng, cảm biến, thiết bị, dữ liệu đo và lịch sử điều khiển
+  05: Trình bày || HTML, CSS, JavaScript, Bootstrap, Chart.js || Hiển thị Dashboard, dữ liệu cảm biến, biểu đồ, lịch sử và giao diện điều khiển thiết bị
+P 047 [Heading 2] 2.3. Thiết kế phần cứng
+P 048 [Normal] ESP32 là bộ vi điều khiển trung tâm của hệ thống, có khả năng kết nối Wi-Fi và hỗ trợ nhiều chân GPIO, phù hợp cho việc kết nối các cảm biến và thiết bị chấp hành.
+P 049 [Normal] DHT11 được sử dụng để đo hai đại lượng môi trường là nhiệt độ và độ ẩm. Cảm biến quang trở LDR được sử dụng để xác định mức độ ánh sáng của môi trường thông qua giá trị đọc từ đầu vào analog của ESP32.
+P 050 [Normal] Hai bóng đèn được mô phỏng bằng hai LED, mỗi LED được nối với một chân GPIO riêng của ESP32 thông qua một điện trở hạn dòng. Hai LED hoạt động như hai thiết bị chấp hành độc lập, tương ứng với bóng đèn 1 và bóng đèn 2.
+P 051 [Normal] Hệ thống phần cứng được chia thành hai nhóm chức năng độc lập:
+P 052 [Normal] Nhóm cảm biến: DHT11 và LDR, thực hiện việc thu thập dữ liệu môi trường theo chu kỳ.
+P 053 [Normal] Nhóm thiết bị chấp hành: LED 1 và LED 2 điều khiển bóng đèn 1 và bóng đèn 2.
+P 054 [Normal] Việc tách biệt hai nhóm giúp bảo đảm rằng thao tác bật hoặc tắt bóng đèn không làm dừng hoặc thay đổi quá trình đọc dữ liệu từ DHT11 và LDR.
+P 055 [Normal] ESP32 đồng thời đảm nhiệm hai cơ chế MQTT:
+P 056 [Normal] Publish: gửi dữ liệu nhiệt độ, độ ẩm và ánh sáng lên MQTT Broker.
+P 057 [Normal] Subscribe: nhận lệnh bật/tắt bóng đèn từ backend thông qua các topic điều khiển tương ứng.
+P 058 [Normal] Sau khi thực hiện lệnh, ESP32 có thể publish lại trạng thái thực tế của bóng đèn để backend cập nhật trạng thái trên hệ thống.
+P 059 [Heading 2] 2.4. Thiết kế phần mềm
+T 060 [8x3]
+  00: Thành phần || Xử lý chính || Đầu ra
+  01: Firmware ESP32 || Đọc DHT11, đọc LDR, kết nối Wi-Fi, publish dữ liệu MQTT, subscribe lệnh điều khiển LED || Dữ liệu cảm biến và trạng thái bóng đèn
+  02: MQTT Broker || Nhận và chuyển tiếp message giữa ESP32 và backend || Message MQTT
+  03: Spring Boot ||  || Dữ liệu database, JSON API, dữ liệu realtime và lệnh MQTT
+  04: MySQL || Lưu dữ liệu cảm biến, trạng thái thiết bị và lịch sử điều khiển || Dữ liệu hiện tại và dữ liệu lịch sử
+  05: JavaScript || Hiển thị dữ liệu, gọi REST API, nhận dữ liệu WebSocket và gửi yêu cầu điều khiển || Dashboard, biểu đồ, bảng lịch sử và trạng thái thiết bị
+  06: Bootstrap || Xây dựng bố cục và các thành phần giao diện || Giao diện web responsive
+  07: Chart.js ||  || Biểu đồ dữ liệu cảm biến
+P 062 [Heading 2] 2.5. Thiết kế cơ sở dữ liệu
+P 063 [Normal] Hệ thống sử dụng MySQL để lưu trữ dữ liệu lâu dài. Cơ sở dữ liệu gồm các bảng chính: users, sensors, devices, sensor_data và action_history.
+P 064 [Normal] Bảng sensor_data lưu các giá trị nhiệt độ, độ ẩm và ánh sáng cùng thời điểm đo. Bảng devices lưu trạng thái hiện tại của hai bóng đèn. Bảng action_history lưu lại các thao tác bật/tắt do người dùng thực hiện.
+P 065 [Normal] Việc lưu riêng dữ liệu cảm biến và lịch sử điều khiển giúp hệ thống có thể truy vấn độc lập dữ liệu môi trường và các thao tác điều khiển thiết bị.
+P 066 [Heading 3] 2.5.1. Sơ đồ quan hệ
+P 068 [Normal] Hình 2.2. Sơ đồ quan hệ dữ liệu
+P 069 [Heading 3] 2.5.2. Bảng users
+T 070 [6x4]
+  00: Tên trường || Kiểu dữ liệu || Ràng buộc || Mô tả
+  01: id || INT || PK, AUTO_INCREMENT || Mã người dùng
+  02: username || VARCHAR(255) || UNIQUE, NOT NULL || Tên đăng nhập
+  03: password || VARCHAR(255) || NOT NULL || Mật khẩu đã băm
+  04: full_name || VARCHAR(150) || NULL || Họ tên người dùng
+  05: created_at || DATETIME || NOT NULL || Thời điểm tạo tài khoản
+P 071 [Heading 3] 2.5.3. Bảng sensors
+T 072 [5x4]
+  00: Tên trường || Kiểu dữ liệu || Ràng buộc || Mô tả
+  01: id || INT || PK, AUTO_INCREMENT || Mã cảm biến
+  02: name || VARCHAR(100) || NOT NULL || Tên cảm biến
+  03: unit || VARCHAR(20) || NULL || Đơn vị đo
+  04: created_at || DATETIME || NOT NULL || Thời điểm tạo cảm biến
+P 074 [Heading 3] 2.5.4. Bảng devices
+T 075 [6x4]
+  00: Tên trường || Kiểu dữ liệu || Ràng buộc || Mô tả
+  01: id || INT || PK, AUTO_INCREMENT || Mã thiết bị
+  02: name || VARCHAR(100) || NOT NULL || Tên thiết bị
+  03: status || ENUM(‘ON’, ‘OFF’) || NOT NULL || Trạng thái hiện tại
+  04: created_at || DATETIME || NOT NULL || Thời điểm tạo thiết bị
+  05: updated_at || DATETIME || NOT NULL || Thời điểm cập nhật trạng thái
+P 077 [Heading 3] 2.5.5. Bảng sensor_data
+T 078 [5x4]
+  00: Tên trường || Kiểu dữ liệu || Ràng buộc || Mô tả
+  01: id || INT || PK, AUTO_INCREMENT || Mã bản ghi
+  02: sensor_id || INT || FK → sensors.id, NOT NULL || Mã cảm biến
+  03: value || DOUBLE || NOT NULL || Giá trị đo
+  04: created_at || DATETIME || NOT NULL, INDEX || Thời điểm ghi nhận
+P 080 [Heading 3] 2.5.6. Bảng action_history
+T 081 [7x4]
+  00: Tên trường || Kiểu dữ liệu || Ràng buộc || Mô tả
+  01: id || INT || PK, AUTO_INCREMENT || Mã lịch sử
+  02: user_id || INT || FK → users.id, NOT NULL || Người thực hiện
+  03: device_id || INT || FK → devices.id, NOT NULL || Thiết bị được điều khiển
+  04: action || ENUM(‘ON’, ‘OFF’) || NOT NULL || Lệnh người dùng yêu cầu
+  05: status || ENUM(‘PENDING’, ‘SUCCESS’, ‘FAILED’, ‘TIMEOUT’) || NOT NULL || Kết quả xử lý lệnh
+  06: created_at || DATETIME || NOT NULL, INDEX || Thời điểm thực hiện
+P 083 [Heading 3] 2.5.7. Quy tắc dữ liệu quan trọng
+P 084 [List Paragraph] devices.status lưu trạng thái hiện tại ON/OFF của bóng đèn.
+P 085 [List Paragraph] action_history.action lưu lệnh ON/OFF do người dùng yêu cầu.
+P 086 [List Paragraph] Khi backend vừa gửi lệnh điều khiển, action_history.status được đặt là PENDING.
+P 087 [List Paragraph] Khi ESP32 xác nhận đã thực hiện lệnh, , action_history.status được đặt là SUCCESS và devices.status được cập nhật tương ứng là ON hoặc OFF.
+P 088 [List Paragraph] Nếu không nhận được phản hồi trong khoảng thời gian quy định, yêu cầu được đánh dấu TIMEOUT và giữ nguyên devices.status cuối cùng đã được xác nhận.
+P 089 [List Paragraph] Mỗi bản ghi sensor_data liên kết với đúng một cảm biến.
+P 090 [List Paragraph] Một cảm biến có thể có nhiều bản ghi dữ liệu theo thời gian.
+P 091 [List Paragraph] Mật khẩu người dùng không được lưu dưới dạng văn bản rõ; phải mã hóa mật khẩu trước khi lưu và so sánh bằng thuật toán.
+P 092 [List Paragraph] Các trường thời gian và khóa ngoại cần được đánh chỉ mục để hỗ trợ truy vấn dữ liệu lịch sử.
+P 093 [Heading 2] 2.6. Thiết kế luồng dữ liệu và giao tiếp
+P 094 [Heading 3] 2.6.1. Luồng quan sát
+P 095 [Normal] Luồng giám sát được thực hiện theo trình tự:
+P 096 [Normal] → ESP32 đọc dữ liệu từ cảm biến DHT11 và LDR
+P 097 [Normal] → Xử lý, kiểm tra và đóng gói dữ liệu
+P 098 [Normal] → Publish dữ liệu lên MQTT Broker Mosquitto
+P 099 [Normal] → Spring Boot subscribe, tiếp nhận và phân tích dữ liệu JSON
+P 100 [Normal] → Lưu dữ liệu vào cơ sở dữ liệu MySQL
+P 101 [Normal] → Phát dữ liệu mới qua WebSocket/STOMP
+P 102 [Normal] → Giao diện Web App nhận dữ liệu và cập nhật Dashboard.
+P 103 [Heading 3] 2.6.2. Luồng điều khiển bóng đèn
+P 104 [Normal] Luồng điều khiển được thực hiện theo trình tự:
+P 105 [Normal] Giao diện web gọi API: GET /api/devices/{deviceId}/status để lấy trạng thái cuối cùng đã được backend xác nhận của đèn. Thao tác điều khiển được cho phép khi trạng thái đã được tải thành công.
+P 106 [Normal] → Người dùng gửi yêu cầu ON/OFF.
+P 107 [Normal] → Backend tạo action_history với trạng thái PENDING.
+P 108 [Normal] → Backend publish lệnh điều khiển lên MQTT Broker thông qua topic tương ứng với bóng đèn:
+P 109 [List Paragraph] iot/device01/control/lamp1
+P 110 [List Paragraph] iot/device01/control/lamp2
+P 111 [Normal] → ESP32 subscribe topic điều khiển, nhận lệnh ON hoặc OFF và thay đổi trạng thái LED tương ứng.
+P 112 [Normal] → Sau khi thực hiện lệnh, ESP32 publish trạng thái hiện tại của LED về backend thông qua MQTT.
+P 113 [Normal] → ESP32 publish trạng thái lên MQTT Broker thông qua topic tương ứng:
+P 114 [List Paragraph] iot/device01/status/lamp1
+P 115 [List Paragraph] iot/device01/status/lamp2
+P 116 [Normal] → Backend subscribe topic trạng thái và thực hiện các thao tác sau:
+P 117 [List Paragraph] Cập nhật action_history.status từ PENDING thành SUCCESS.
+P 118 [List Paragraph] Cập nhật devices.status thành ON hoặc OFF.
+P 119 [List Paragraph] Cập nhật devices.updated_at và gửi trạng thái mới đến giao diện thông qua WebSocket/STOMP.
+P 120 [Normal] Nếu sau thời gian cố định kể từ thời điểm publish lệnh MQTT mà backend không nhận được phản hồi từ ESP32 (TIMEOUT), backend thực hiện các thao tác:
+P 121 [Normal] Cập nhật action_history.status từ PENDING thành TIMEOUT.
+P 122 [Normal] Giữ nguyên devices.status là trạng thái cuối cùng đã được ESP32 xác nhận.
+P 123 [Normal] Gửi thông báo TIMEOUT đến giao diện web thông qua WebSocket/STOMP để hiển thị trạng thái không xác định; không kết luận rằng bóng đèn đang ON hoặc OFF.
+P 124 [Normal] Khi ESP32 kết nối MQTT trở lại, ESP32 publish lại trạng thái hiện tại của các LED lên các topic status. Backend cập nhật devices.status và gửi trạng thái mới đến giao diện qua WebSocket/STOMP.
+P 125 [Heading 3] 2.6.3.  Luồng tra cứu dữ liệu
+P 126 [Normal] Luồng tra cứu dữ liệu được thực hiện theo trình tự :
+P 127 [Normal] Web App gửi REST API  cùng điều kiện lọc
+P 128 [Normal] → Backend gọi xuống JPA/Hibernate
+P 129 [Normal] → Truy vấn MySQL
+P 130 [Normal] → Giao diện hiển thị dữ liệu được trả về
+P 131 [Heading 2] 2.7. MQTT Topic sử dụng
+P 132 [Normal] Hệ thống sử dụng các topic MQTT riêng biệt cho dữ liệu cảm biến, lệnh điều khiển và trạng thái thiết bị.
+T 133 [6x4]
+  00: Topic || Publisher || Subscriber || Chức năng
+  01: iot/device01/sensor || ESP32 || Backend || Gửi nhiệt độ, độ ẩm và ánh sáng
+  02: iot/device01/control/lamp1 || Backend || ESP32 || Gửi lệnh ON/OFF cho bóng đèn 1
+  03: iot/device01/control/lamp2 || Backend || ESP32 || Gửi lệnh ON/OFF cho bóng đèn 2
+  04: iot/device01/status/lamp1 || ESP32 || Backend || Gửi trạng thái của bóng đèn 1
+  05: iot/device01/status/lamp2 || ESP32 || Backend || Gửi trạng thái của bóng đèn 2
+P 134 [Heading 2] 2.8. Nguyên tắc thiết kế và khả năng mở rộng
+P 135 [Normal] Hệ thống được xây dựng dựa trên một số nguyên tắc chính:
+P 136 [Normal] ESP32 chịu trách nhiệm giao tiếp với cảm biến và thiết bị chấp hành.
+P 137 [Normal] MQTT đảm nhiệm việc truyền thông giữa ESP32 và backend theo mô hình Publish/Subscribe.
+P 138 [Normal] Spring Boot chịu trách nhiệm xử lý nghiệp vụ, quản lý dữ liệu, cung cấp REST API và WebSocket/STOMP.
+P 139 [Normal] MySQL chịu trách nhiệm lưu trữ dữ liệu lâu dài.
+P 140 [Normal] Thymeleaf, JavaScript và Bootstrap chịu trách nhiệm xây dựng giao diện web.
+P 141 [Normal] Chart.js được sử dụng để biểu diễn dữ liệu cảm biến trực quan.
+P 142 [Normal] Dữ liệu realtime được truyền bằng WebSocket/STOMP để giảm nhu cầu gửi request liên tục từ trình duyệt.
+P 143 [Normal] Chức năng đọc cảm biến và điều khiển bóng đèn được tách biệt ở cả phần cứng, firmware và MQTT topic.
+P 144 [Normal] Có thể mở rộng hệ thống bằng cách bổ sung cảm biến hoặc thiết bị mới, đồng thời tạo các topic MQTT tương ứng mà không cần thay đổi toàn bộ kiến trúc.
+P 145 [Normal] Các thông tin cấu hình như địa chỉ MQTT Broker, thông tin kết nối MySQL và tài khoản MQTT cần được tách khỏi mã nguồn.
+P 146 [Normal] Khi triển khai trong môi trường thực tế cần bổ sung cơ chế xác thực, phân quyền, HTTPS/WSS và xác thực MQTT.
+P 147 [Heading 1] CHƯƠNG 3. THIẾT KẾ USE CASE
+P 148 [Normal] Hệ thống gồm 6 use case chính. Các chức năng: theo dõi dữ liệu thời gian thực, xem biểu đồ và điều khiển hai bóng đèn được đặt trên màn hình Dashboard. Các chức năng tra cứu lịch sử dữ liệu cảm biến và lịch sử điều khiển được thực hiện trên các màn hình riêng.
+T 149 [7x3]
+  00: Tên use case || Mô tả ngắn || Màn hình
+  01: Đăng nhập || Xác thực tài khoản || Login
+  02: Xem dữ liệu cảm biến thời gian thực || Hiển thị nhiệt độ, độ ẩm và ánh sáng mới nhất. || Dashboard
+  03: Xem biểu đồ dữ liệu cảm biến || Bểu diễn và cập nhật xu hướng nhiệt độ, độ ẩm và ánh sáng theo thời gian. || Dashboard
+  04: Điều khiển bật/tắt thiết bị || Gửi lệnh ON/OFF cho hai bóng đèn và theo dõi trạng thái phản hồi. || Dashboard
+  05: Xem lịch sử giá trị cảm biến || Lọc, sắp xếp và phân trang dữ liệu cảm biến đã lưu. || Sensor Data
+  06: Xem lịch sử điều khiển thiết bị || Lọc và xem các lần bật/tắt bóng đèn. || Device History
+P 151 [Heading 2] 3.1. Use case: Đăng nhập
+P 152 [Heading 3] 3.1.1. Giao diện
+P 154 [Normal] Hình 3.1. Màn hình đăng nhập
+P 155 [Heading 3] 3.1.2. Đặc tả use case
+T 156 [7x2]
+  00: Thuộc tính || Nội dung
+  01: Tên use case || Đăng nhập
+  02: Actor || Người dùng
+  03: Tiền điều kiện || Người dùng đã có tài khoản; Spring Boot và MySQL đang hoạt động
+  04: Hậu điều kiện || Người dùng được xác thực thành công và chuyển vào trong Dashboard
+  05: Luồng thực hiện || Bước 1: Người dùng nhập username và password. / Bước 2: Giao diện gửi yêu cầu POST /api/auth/login đến Spring Boot. / Bước 3: Spring Boot truy vấn bảng users trong MySQL. / Bước 4: Backend kiểm tra thông tin xác thực. / Bước 5: Nếu thông tin hợp lệ, backend trả kết quả xác thực. / Bước 6: Giao diện chuyển người dùng đến Dashboard.
+  06: Luồng ngoại lệ || Người dùng bỏ trống username hoặc password: giao diện yêu cầu nhập đầy đủ dữ liệu. / Username hoặc password không đúng: backend trả mã lỗi xác thực và giao diện hiển thị thông báo. / Không kết nối được MySQL: hệ thống thông báo lỗi máy chủ.
+P 158 [Heading 3] 3.1.3. Sequence diagram
+P 160 [Normal] Hình 3.2. Sequence diagram – Đăng nhập
+P 161 [Heading 3] 3.1.4. Mô tả API
+T 162 [7x2]
+  00: Thuộc tính || Nội dung
+  01: Tên API || Đăng nhập
+  02: Method || POST
+  03: URL || /api/auth/login
+  04: Params / Query || Không có
+  05: Body || { / “username” : “abc”, / “password” : “123” / }
+  06: Response || { / “id” : 1, / “username” : “abc”, / “full_name” : “Nguyen Van A” / }
+P 165 [Heading 3] 3.1.5. Mapping dữ liệu API – Database
+T 166 [4x3]
+  00: Trường dữ liệu || Bảng || Cột
+  01: id || users || id
+  02: username || users || username
+  03: full_name || users || full_name
+P 168 [Heading 2] 3.2. Use case: Xem dữ liệu cảm biến thời gian thực
+P 169 [Heading 3] 3.2.1. Giao diện
+P 171 [Normal] Hình 3.3. Giao diện dashboard – dữ liệu cảm biến thời gian thực
+P 172 [Heading 3] 3.2.2. Đặc tả use case
+T 173 [7x2]
+  00: Thuộc tính || Nội dung
+  01: Tên use case || Xem dữ liệu cảm biến thời gian thực
+  02: Actor || Người dùng đã được xác thực
+  03: Tiền điều kiện || Người dùng đã đăng nhập; ESP32, Mosquitto, Spring Boot, MySQL và Web Application đang hoạt động.
+  04: Hậu điều kiện || Dashboard hiển thị dữ liệu cảm biến gần nhất và tự động cập nhật khi có dữ liệu mới.
+  05: Luồng thực hiện || Bước 1: Người dùng mở Dashboard. / Bước 2: JavaScript gọi GET /api/sensor-data/latest để lấy dữ liệu hiện tại. / Bước 3: Web Application thiết lập kết nối WebSocket/STOMP với Spring Boot. / Bước 4: ESP32 đọc nhiệt độ, độ ẩm từ DHT11 và ánh sáng từ LDR. / Bước 5: ESP32 đóng gói dữ liệu và publish lên topic: / iot/device01/sensor / Bước 6: Mosquitto chuyển message đến Spring Boot. / Bước 7: Spring Boot phân tích dữ liệu MQTT và lưu dữ liệu vào sensor_data ở Database. / Bước 8: S
+  06: Luồng ngoại lệ || ESP32 mất kết nối Wi-Fi/MQTT: giao diện giữ dữ liệu cuối cùng và hiển thị trạng thái thiết bị mất kết nối. / WebSocket mất kết nối: giao diện hiển thị trạng thái mất kết nối và thực hiện kết nối lại. / Payload MQTT không hợp lệ: Spring Boot từ chối lưu dữ liệu và ghi log lỗi. / MySQL không hoạt động: dữ liệu mới không được lưu, đồng thời backend ghi nhận lỗi hệ thống.
+P 174 [Heading 3] 3.2.3. Sequence diagram
+P 176 [Normal] Hình 3.4. Sequence diagram – Xem dữ liệu cảm biến thời gian thực
+P 181 [Heading 3] 3.2.4. Mô tả API
+T 182 [7x2]
+  00: Thuộc tính || Nội dung
+  01: Tên API || Lấy dữ liệu cảm biến gần nhất
+  02: Method || GET
+  03: URL || /api/sensor-data/latest
+  04: Params / Query || Không có
+  05: Body || Không có
+  06: Response || { / "temperature":28.5, / "humidity":70.2, / "light":1530, / "time":"2026-08-19T10:20:05" / }
+P 183 [Heading 3] 3.2.5. Mapping dữ liệu API – Database
+T 184 [5x3]
+  00: Trường dữ liệu || Bảng || Cột
+  01: temperature || sensor_data + sensors || value, name
+  02: humidity || sensor_data + sensors || value, name
+  03: light || sensor_data + sensors || value, name
+  04: time || sensor_data || created_at
+P 186 [Heading 2] 3.3. Use case: Xem biểu đồ dữ liệu cảm biến
+P 187 [Heading 3] 3.3.1. Giao diện
+P 189 [Normal] Hình 3.5. Dashboard – biểu đồ dữ liệu cảm biến
+P 190 [Heading 3] 3.3.2. Đặc tả use case
+T 191 [7x2]
+  00: Thuộc tính || Nội dung
+  01: Tên use case || Xem biểu đồ dữ liệu cảm biến
+  02: Actor || Người dùng đã được xác thực
+  03: Tiền điều kiện || Người dùng đã đăng nhập; MySQL có dữ liệu cảm biến hoặc hệ thống đang nhận dữ liệu mới.
+  04: Hậu điều kiện || Biểu đồ hiển thị dữ liệu theo thời gian và được cập nhật khi có giá trị mới.
+  05: Luồng thực hiện || Bước 1: Người dùng mở Dashboard. / Bước 2: JavaScript gọi GET /api/sensor-data/chart để lấy dữ liệu gần nhất. / Bước 3: Spring Boot truy vấn dữ liệu từ MySQL. / Bước 4: Backend trả dữ liệu theo thời gian dưới dạng JSON. / Bước 5: JavaScript sử dụng Chart.js để tạo biểu đồ. / Bước 6: Khi Spring Boot nhận được dữ liệu cảm biến mới từ ESP32, backend phát dữ liệu qua WebSocket/STOMP. / Bước 7: JavaScript nhận dữ liệu mới và thêm điểm mới vào biểu đồ.
+  06: Luồng ngoại lệ || Không có dữ liệu: biểu đồ hiển thị trạng thái chưa có dữ liệu. / Không kết nối được WebSocket: biểu đồ giữ dữ liệu hiện tại và giao diện hiển thị trạng thái mất kết nối. / Dữ liệu không hợp lệ: JavaScript bỏ qua bản ghi không hợp lệ.
+P 192 [Heading 3] 3.3.3. Sequence diagram
+P 194 [Normal] Hình 3.6. Sequence diagram – Xem biểu đồ dữ liệu cảm biến
+P 195 [Heading 3] 3.3.4. Mô tả API
+T 196 [7x2]
+  00: Thuộc tính || Nội dung
+  01: Tên API || Lấy dữ liệu biểu đồ
+  02: Method || GET
+  03: URL || /api/sensor-data/chart
+  04: Params / Query || limit=20
+  05: Body || Không có
+  06: Response || { /  "temperature": [ {"time":"10:00","value":28.1}, {"time":"10:02","value":28.5} ],  / "humidity": [ {"time":"10:00","value":70}, {"time":"10:02","value":70.2} ],  / "light": [ {"time":"10:00","value":1500}, {"time":"10:02","value":1530} ] /  }
+P 197 [Heading 3] 3.3.5. Mapping dữ liệu API – Database
+T 198 [6x3]
+  00: Trường dữ liệu || Bảng || Cột
+  01: temperature[].value || sensor_data || value
+  02: humidity[].value || sensor_data || value
+  03: light[].value || sensor_data || value
+  04: *.time || sensor_data || created_at
+  05: Tên chuỗi dữ liệu || sensors || name
+P 200 [Heading 2] 3.4. Use case: Điều khiển bật/tắt thiết bị
+P 201 [Heading 3] 3.4.1. Giao diện
+P 203 [Normal] Hình 3.7. Dashboard – khu vực điều khiển thiết bị
+P 204 [Heading 3] 3.4.2. Đặc tả use case
+T 205 [7x2]
+  00: Thuộc tính || Nội dung
+  01: Tên use case || Điều khiển bật/tắt thiết bị
+  02: Actor || Người dùng đã được xác thực
+  03: Tiền điều kiện || Người dùng đã đăng nhập; thiết bị tồn tại; Spring Boot, Mosquitto và ESP32 đang hoạt động hoặc đã có trạng thái cuối cùng được lưu.
+  04: Hậu điều kiện || Lệnh được gửi đến thiết bị; trạng thái xác nhận của thiết bị được cập nhật nếu nhận được phản hồi từ ESP32.
+  05: Luồng thực hiện || Bước 1: Khi mở Dashboard, JavaScript gọi: / GET /api/devices/{deviceId}/status / để lấy trạng thái cuối cùng được backend xác nhận. / Bước 2: Giao diện hiển thị trạng thái của đèn 1 và đèn 2. / Bước 3: Người dùng chọn ON hoặc OFF. / Bước 4: JavaScript gửi: / POST /api/devices/{deviceId}/control / đến Spring Boot. / Bước 5: Backend kiểm tra thiết bị và tạo bản ghi action_history với trạng thái PENDING. / Bước 6: Spring Boot publish lệnh MQTT. / Đối với đèn 1: / iot/device01/con
+  06: Luồng ngoại lệ || Không lấy được trạng thái cuối: Khóa nút điều khiển và yêu cầu tải lại trang / Thiết bị không tồn tại: backend trả lỗi. / Lệnh không hợp lệ: backend trả lỗi HTTP 400. / Sau khoảng thời gian cố định (5s) kể từ lúc publish lệnh điều khiển mà không nhận được topic trạng thái: action_history chuyển TIMEOUT, devices.status giữ nguyên trạng thái cuối cùng đã được xác nhận; giao diện hiển thị trạng thái không xác định và thông báo TIMEOUT.
+P 207 [Heading 3] 3.4.3. Sequence diagram
+P 209 [Normal] Hình 3.8. Sequence diagram – Điều khiển bật/tắt thiết bị
+P 210 [Heading 3] 3.4.4. Mô tả API
+T 211 [7x2]
+  00: Thuộc tính || Nội dung
+  01: Tên API || Lấy trạng thái thiết bị
+  02: Method || GET
+  03: URL || /api/devices/{deviceId}/status
+  04: Params / Query || deviceId
+  05: Body || Không có
+  06: Response || { / “deviceId”:1, / “status” : OFF, / }
+T 213 [7x2]
+  00: Thuộc tính || Nội dung
+  01: Tên API || Điều khiển thiết bị
+  02: Method || POST
+  03: URL || /api/devices/{deviceId}/control
+  04: Params / Query || deviceId
+  05: Body || { / “deviceId”:1, / “action”:ON / }
+  06: Response || { / "id":2, / "status":"PENDING" / “timeoutSeconds” : 5 / }
+P 214 [Normal] 3.4.5. Mapping dữ liệu API – Database
+T 215 [8x3]
+  00: Trường dữ liệu || Bảng || Cột
+  01: id || action_history || id
+  02: device_id || action_history || device_id
+  03: action || action_history || action
+  04: status || action_history || status
+  05: created_at || action_history || created_at
+  06: Trạng thái thiết bị || devices || status
+  07: Thời điểm cập nhật trạng thái || devices || updated_at
+P 216 [Heading 2] 3.5. Use case: Xem lịch xử giá trị cảm biến
+P 217 [Heading 3] 3.5.1. Giao diện
+P 219 [Normal] Hình 3.9. Data Sensor– lịch sử dữ liệu cảm biến
+P 220 [Heading 3] 3.5.2. Đặc tả use case
+T 221 [7x2]
+  00: Thuộc tính || Nội dung
+  01: Tên use case || Xem lịch sử giá trị cảm biến
+  02: Actor || Người dùng đã được xác thực
+  03: Tiền điều kiện || Người dùng đã đăng nhập và truy cập được màn hình Sensor Data.
+  04: Hậu điều kiện || Bảng hiển thị đúng dữ liệu theo điều kiện lọc, thứ tự và trang được lựa chọn.
+  05: Luồng thực hiện || Bước 1: Người dùng mở màn hình Sensor Data. / Bước 2: Người dùng lựa chọn cảm biến, khoảng thời gian. / Bước 3: JavaScript gửi: / GET /api/sensor-data/history / kèm các tham số lọc và phân trang. / Bước 4: Spring Boot kiểm tra các tham số. / Bước 5: Spring Data JPA thực hiện truy vấn MySQL. / Bước 6: Backend trả kết quả dạng JSON có phân trang. / Bước 7: JavaScript hiển thị dữ liệu trên bảng.
+  06: Luồng ngoại lệ || Tham số không hợp lệ: backend trả HTTP 400. / Không có dữ liệu phù hợp: bảng hiển thị danh sách rỗng. / Lỗi cơ sở dữ liệu: backend trả HTTP 500 và giao diện hiển thị thông báo lỗi.
+P 222 [Heading 3] 3.5.3. Sequence diagram
+P 224 [Normal] Hình 3.10. Sequence diagram – Xem lịch sử giá trị cảm biến
+P 225 [Heading 3] 3.5.4. Mô tả API
+T 226 [7x2]
+  00: Thuộc tính || Nội dung
+  01: Tên API || Tra cứu lịch sử cảm biến
+  02: Method || GET
+  03: URL || /api/sensor-data/history
+  04: Params / Query || sensorId; from; to; page; size; sort
+  05: Body || Không có
+  06: Response || {"content": / [{"id":1001,"sensorId":1,"sensorName":"Temperature","value":28.5,"createdAt":"..."}]," totalPages":5}
+P 227 [Heading 3] 3.5.5. Mapping dữ liệu API – Database
+T 228 [6x3]
+  00: Trường dữ liệu || Bảng || Cột
+  01: content[].id || sensor_data || id
+  02: content[].sensorId || sensor_data || sensor_id
+  03: content[].sensorName || sensors || name
+  04: content[].value || sensor_data || value
+  05: content[].createdAt || sensor_data || created_at
+P 229 [Heading 2] 3.6. Use case: Xem lịch sử điều khiển thiết bị
+P 230 [Heading 3] 3.6.1. Giao diện
+P 232 [Normal] Hình 3.11. Device History – lịch sử điều khiển thiết bị
+P 233 [Heading 3] 3.6.2. Đặc tả use case
+T 234 [7x2]
+  00: Thuộc tính || Nội dung
+  01: Tên use case || Xem lịch sử điều khiển thiết bị
+  02: Actor || Người dùng đã được xác thực
+  03: Tiền điều kiện || Người dùng đã đăng nhập và truy cập được màn hình Device History.
+  04: Hậu điều kiện || Bảng hiển thị đúng lịch sử điều khiển theo bộ lọc và phân trang.
+  05: Luồng thực hiện || Bước 1: Người dùng mở màn hình Device History. / Bước 2: Người dùng lựa chọn thiết bị, hành động, trạng thái hoặc khoảng thời gian. / Bước 3: JavaScript gửi: / GET /api/devices/action-history / kèm điều kiện lọc. / Bước 4: Spring Boot kiểm tra tham số. / Bước 5: Spring Data JPA truy vấn bảng action_history và các bảng liên quan. / Bước 6: MySQL trả kết quả. / Bước 7: Backend trả dữ liệu phân trang về Web Application. / Bước 8: JavaScript hiển thị lịch sử trên bảng.
+  06: Luồng ngoại lệ || Không có dữ liệu phù hợp: trả danh sách rỗng. / Tham số không hợp lệ: API trả HTTP 400. / Lỗi cơ sở dữ liệu: API trả HTTP 500 và giao diện yêu cầu người dùng thử lại.
+P 235 [Heading 3] 3.6.3. Sequence diagram
+P 237 [Normal] Hình 3.12. Sequence diagram – Xem lịch sử điều khiển thiết bị
+P 238 [Heading 3] 3.6.4. Mô tả API
+T 239 [7x2]
+  00: Thuộc tính || Nội dung
+  01: Tên API || Tra cứu lịch sử điều khiển
+  02: Method || GET
+  03: URL || /api/devices/action-history
+  04: Params / Query || deviceId; action; status; from; to; page; size; sort
+  05: Body || Không có
+  06: Response || {"content":[{"id":125,"deviceName":"Lamp 1","action":"ON","status":"SUCCESS","createdAt":"..."}],"totalPages":4}
+P 244 [Heading 3] 3.6.5. Mapping dữ liệu API – Database
+T 245 [7x3]
+  00: Trường dữ liệu || Bảng || Cột
+  01: content[].id || action_history || id
+  02: content[].deviceName || devices || name
+  03: content[].action || action_history || action
+  04: content[].status || action_history || status
+  05: content[].userId || action_history || user_id
+  06: content[].createdAt || action_history || created_at
+P 247 [Heading 1] CHƯƠNG 4. KẾT QUẢ THỰC NGHIỆM
+P 248 [Normal] Chương này trình bày kết quả triển khai mô hình giám sát và điều khiển hai đèn bằng ESP32, các màn hình của ứng dụng Web và kết quả kiểm thử. Phần cứng đã được vận hành với cảm biến nhiệt độ, độ ẩm, ánh sáng và hai LED. Đối với chức năng mới dùng JWT và WebSoc
+P 249 [Heading 2] 4.1. Kết quả triển khai hệ thống
+P 250 [Heading 3] 4.1.1. Mô hình phần cứng và chương trình ESP32
+P 251 [Normal] Mô hình dùng một ESP32 với hai LED rời, một cảm biến DHT11 và một đầu đo ánh sáng nối ngõ analog. Mỗi LED có một điện trở giới hạn dòng mắc nối tiếp trong nhánh riêng. Firmware tổ chức hai đèn bằng khóa lamp1 và lamp2; khi bổ sung thiết bị trong tương lai, mã 
+P 252 [Normal] Bảng 4.1. Kết nối phần cứng trong mô hình
+T 253 [5x4]
+  00: Thiết bị || Chân ESP32 || Vai trò || Dữ liệu hoặc trạng thái
+  01: LED 1 || GPIO25 || Ngõ ra số || lamp1: ON/OFF
+  02: LED 2 || GPIO26 || Ngõ ra số || lamp2: ON/OFF
+  03: DHT11 || GPIO27 || Ngõ vào số || Nhiệt độ (°C), độ ẩm (%)
+  04: Đầu đo ánh sáng || GPIO34 || Ngõ vào ADC || Giá trị 0–4095 ADC
+P 256 [Normal] Hình 4.1. Mô hình ESP32, cảm biến và hai đèn trong báo cáo gốc
+P 257 [Normal] ESP32 đọc DHT11 và ADC khoảng mỗi 2 giây. Nếu lần đọc DHT11 không hợp lệ, firmware bỏ qua lần gửi đó. Giá trị ánh sáng được biểu diễn theo thang ADC 0–4095, chưa được hiệu chuẩn thành đơn vị lux. Việc ghi nhận một lệnh SUCCESS chỉ cho biết ESP32 đã xử lý GPIO 
+P 258 [Heading 3] 4.1.2. Truyền thông, lưu trữ và máy chủ
+P 259 [Normal] ESP32 dùng định danh device01 và kết nối Mosquitto qua MQTT (cấu hình mặc định cổng 1001). Bản tin số đo đi qua iot/device01/sensor. Backend gửi lệnh điều khiển lên iot/device01/control, gồm requestId, deviceKey và action. ESP32 trả phản hồi qua iot/device01/a
+P 260 [Normal] Spring Boot tiếp nhận MQTT, ghi số đo và lịch sử lệnh vào MySQL iot_db. Các bảng chính là users, sensors, sensor_data, devices và action_history. requestId là khóa ghép một lệnh Web với phản hồi từ ESP32. Backend chỉ coi lệnh hoàn tất sau khi nhận phản hồi tươ
+P 261 [Normal] Bảng 4.2. Thành phần phần mềm đã triển khai
+T 262 [6x3]
+  00: Thành phần || Kết quả triển khai || Điểm kiểm chứng
+  01: ESP32 || Đọc ba đại lượng, điều khiển hai GPIO và gửi ACK || Firmware sketch_sep11a.ino; lần chạy phần cứng
+  02: Mosquitto || Chuyển bản tin cảm biến, lệnh, ACK và trạng thái || Luồng MQTT theo device01
+  03: MySQL || Lưu thiết bị, cảm biến, số đo, người dùng, lịch sử || Các bảng trong iot_db
+  04: Spring Boot || REST, JWT Bearer, STOMP/WebSocket || Bộ thử HTTP/STOMP
+  05: Web || Đăng nhập, Dashboard, tra cứu và hồ sơ || Ảnh giao diện và thử nghiệm trình duyệt
+P 264 [Normal] Máy chủ cung cấp giao diện HTML/CSS/JavaScript cùng nguồn gốc với API tại cổng 8080. Sau khi đăng nhập, client gửi JWT Bearer cho REST và trong khung STOMP CONNECT. Backend đẩy thay đổi qua /topic/sensor-data, /topic/devices, /topic/availability và kênh riêng 
+P 265 [Heading 2] 4.2. Kết quả giao diện và chức năng
+P 266 [Normal] Các hình trong mục này thể hiện mã giao diện hiện hành. Hình Dashboard được lấy từ ảnh chụp phiên chạy với ESP32 trong báo cáo gốc. Ảnh đăng nhập, dữ liệu cảm biến, lịch sử và hồ sơ được dựng từ giao diện hiện hành với dữ liệu minh họa trong môi trường thử, kh
+P 267 [Heading 3] a. Màn hình đăng nhập
+P 268 [Normal] Người dùng nhập tên đăng nhập và mật khẩu; frontend gửi JSON tới POST /api/auth/login. Khi xác thực thành công, backend trả JWT cùng thời hạn. Frontend lưu JWT trong sessionStorage của tab, gắn Bearer cho những API được bảo vệ và chuyển về trang đăng nhập khi 
+P 270 [Normal] Hình 4.2. Màn hình đăng nhập của giao diện hiện hành
+P 271 [Heading 3] b. Dashboard và điều khiển hai đèn
+P 272 [Normal] Dashboard hiển thị nhiệt độ, độ ẩm, ánh sáng, trạng thái kết nối ESP32, hai đèn và biểu đồ gần nhất. Ở thời điểm ảnh nguồn được chụp, giao diện hiển thị 29,8 °C, 53% và 2178 ADC; đây là một ảnh chụp đơn lẻ, không phải phép đo độ chính xác. Nút bật/tắt tạo lệnh
+P 274 [Normal] Hình 4.3. Dashboard trong ảnh chụp phiên chạy thực tế của báo cáo gốc
+P 275 [Heading 3] c. Màn hình dữ liệu cảm biến
+P 276 [Normal] Màn hình hiển thị các bản ghi theo trang với ID, loại cảm biến, giá trị, đơn vị và thời gian. Người dùng có thể lọc theo cảm biến, giá trị chính xác hoặc khoảng thời gian tương ứng với ngày, phút hay giây đã nhập; kết quả chỉ gồm các bản ghi trong khoảng này. 
+P 278 [Normal] Hình 4.4. Màn hình dữ liệu cảm biến với dữ liệu minh họa
+P 279 [Heading 3] d. Màn hình lịch sử điều khiển
+P 280 [Normal] Lịch sử ghi người thao tác, thiết bị, hành động ON/OFF, kết quả và thời gian. Bộ lọc hỗ trợ thiết bị, hành động, trạng thái và thời gian; bảng có phân trang, sắp xếp và sao chép thời điểm. Các trạng thái PENDING, SUCCESS, FAILED và TIMEOUT phản ánh vòng đời lệ
+P 282 [Normal] Hình 4.5. Màn hình lịch sử điều khiển với dữ liệu minh họa
+P 283 [Heading 3] e. Màn hình hồ sơ cá nhân
+P 284 [Normal] Trang hồ sơ trình bày thông tin sinh viên và các liên kết tài liệu, thiết kế Figma, Postman. Liên kết Figma và Postman dẫn tới tài nguyên đã được cung cấp trong dự án; mục GitHub và Google Drive trên giao diện hiện vẫn là liên kết chung, cần thay bằng địa chỉ 
+P 286 [Normal] Hình 4.6. Màn hình hồ sơ cá nhân của giao diện hiện hành
+P 287 [Heading 2] 4.3. Kết quả kiểm thử
+P 288 [Normal] Kiểm thử tự động được chạy trên ứng dụng Spring Boot ở cổng ngẫu nhiên, cơ sở dữ liệu H2 ở chế độ thử nghiệm và MQTT gateway mô phỏng. Kết quả gần nhất: 16 phép thử đạt, không có lỗi hoặc thất bại; một phép thử phụ thuộc broker thật được bỏ qua theo điều kiện 
+P 289 [Normal] Bảng 4.3. Đối chiếu chức năng API và kết quả thử
+T 290 [10x3]
+  00: Chức năng || Đầu vào hoặc tình huống || Kết quả quan sát
+  01: Đăng nhập || POST /api/auth/login: thiếu mật khẩu; sai mật khẩu; hợp lệ || Lần lượt HTTP 400, 401, 200; trả JWT Bearer, không tạo cookie phiên
+  02: Bảo vệ REST || GET /api/devices thiếu, sai hoặc hết hạn JWT || HTTP 401; JWT hợp lệ đọc được hai thiết bị
+  03: Dữ liệu cảm biến || Bản tin MQTT có nhiệt độ, độ ẩm, ánh sáng || Ghi ba bản ghi; latest, chart và history phản ánh dữ liệu; STOMP đẩy sau commit
+  04: Trạng thái thiết bị || ONLINE và trạng thái lamp1 OFF || GET /api/devices/{deviceId}/status trả OFF đã xác nhận
+  05: Điều khiển || POST /api/devices/{deviceId}/control với ON || HTTP 202, PENDING và requestId; ACK hợp lệ đổi kết quả thành SUCCESS
+  06: Tra cứu lệnh || GET /api/commands/{requestId} bằng tài khoản khác || HTTP 404, không lộ lệnh của người dùng trước
+  07: Lịch sử điều khiển || GET /api/devices/action-history sau ACK || Bản ghi có trạng thái SUCCESS
+  08: Hết thời gian chờ || Gửi OFF nhưng không có ACK || TIMEOUT sau thời hạn; trạng thái ON đã xác nhận không bị ghi đè
+  09: Bảo vệ STOMP || CONNECT thiếu/hết hạn JWT; client SEND trái phép || Bị từ chối; kết nối đã xác thực đóng khi JWT hết hạn
+P 292 [Normal] Các API GET /api/sensor-data/latest, /api/sensor-data/chart, /api/sensor-data/history và GET /api/devices/action-history có đường dẫn đúng với mã hiện hành. Tham số phân trang dùng page bắt đầu từ 0, size từ 1 đến 100; biểu đồ giới hạn số điểm mỗi cảm biến. Cá
+P 293 [Normal] Trong lần thử phần cứng trước đó, người thực hiện đã xác nhận ESP32 gửi được số đo vào iot_db và hai đèn có thể bật sáng sau khi thay LED hỏng, mắc điện trở nối tiếp. Bằng chứng này thuộc quá trình tích hợp thực tế trước khi đổi sang JWT; Chương 4 không suy di
+P 294 [Heading 2] 4.4. Đánh giá kết quả
+P 295 [Normal] Bảng 4.4. Mức độ đáp ứng yêu cầu và giới hạn
+T 296 [6x3]
+  00: Yêu cầu || Kết quả đạt được || Giới hạn cần lưu ý
+  01: Giám sát ba đại lượng || ESP32 phát bản tin; backend lưu và hiển thị theo thời gian || Ánh sáng ở thang ADC, chưa hiệu chuẩn lux
+  02: Điều khiển hai đèn || lamp1 và lamp2 có lệnh, ACK, trạng thái và lịch sử riêng || SUCCESS xác nhận GPIO, không đo ánh sáng LED
+  03: Cập nhật thời gian thực || Backend đẩy sự kiện qua WebSocket/STOMP sau khi ghi dữ liệu || Thử tự động trong môi trường giả lập MQTT
+  04: Tra cứu dữ liệu || Lọc, sắp xếp, phân trang, sao chép thời gian || Chưa đánh giá tải lớn và vận hành dài hạn
+  05: Bảo vệ hệ thống || REST và STOMP dùng JWT Bearer; API đăng nhập công khai || Chưa có refresh token hoặc thu hồi token phía máy chủ
+P 298 [Normal] Kết quả cho thấy mô hình đã đáp ứng các chức năng cốt lõi của đề tài trong phạm vi hai đèn: thu thập số đo, lưu trữ, quan sát qua Web, gửi lệnh và theo dõi xác nhận. Phần thử tự động chứng minh các luồng API, JWT và STOMP hoạt động trong môi trường thử, còn lầ

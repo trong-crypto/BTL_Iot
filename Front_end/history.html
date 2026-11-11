@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch sử thiết bị | IoT Command Center</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./css/global.css?v=fit-2">
+    <link rel="stylesheet" href="./css/history.css?v=fit-4">
+    <link rel="stylesheet" href="./css/pagination.css?v=fit-2">
+    <link rel="stylesheet" href="./css/timestamp-copy.css?v=1">
+</head>
+<body class="history-page">
+    <header class="topbar">
+        <a class="brand" href="./index.html">IoT Command Center</a>
+    </header>
+
+    <aside class="sidebar">
+        <nav class="sidebar-nav" aria-label="Điều hướng chính">
+            <a href="./index.html">Tổng quan</a>
+            <a href="./sensor-data.html">Dữ liệu cảm biến</a>
+            <a href="./history.html" class="active" aria-current="page">Lịch sử thiết bị</a>
+            <a href="./profile.html">Hồ sơ cá nhân</a>
+        </nav>
+    </aside>
+
+    <main class="main-content history-main">
+        <section class="history-heading">
+            <h1>Lịch sử thiết bị</h1>
+            <p>Theo dõi và quản lý lịch sử hoạt động bật/tắt của các thiết bị trong hệ thống.</p>
+        </section>
+
+        <section class="history-filter-card" aria-label="Bộ lọc lịch sử thiết bị">
+            <form id="historyFilterForm" class="history-filter-form">
+                <div class="history-filter-fields">
+                    <div class="history-filter-row">
+                        <label class="history-filter-field">
+                            <span>TÊN THIẾT BỊ</span>
+                            <span class="history-select">
+                                <select id="deviceId">
+                                    <option value="all">Tất cả thiết bị</option>
+                                    <option value="lamp1">Đèn 1 (lamp1)</option>
+                                    <option value="lamp2">Đèn 2 (lamp2)</option>
+                                </select>
+                            </span>
+                        </label>
+                        <label class="history-filter-field">
+                            <span>HÀNH ĐỘNG</span>
+                            <span class="history-select">
+                                <select id="actionFilter">
+                                    <option value="all">Tất cả hành động</option>
+                                    <option value="on">Bật</option>
+                                    <option value="off">Tắt</option>
+                                </select>
+                            </span>
+                        </label>
+                    </div>
+                    <div class="history-filter-row">
+                        <label class="history-filter-field history-status-field">
+                            <span>TRẠNG THÁI</span>
+                            <span class="history-select">
+                                <select id="statusFilter">
+                                    <option value="all">Tất cả trạng thái</option>
+                                    <option value="SUCCESS">Thành công</option>
+                                    <option value="FAILED">Thất bại</option>
+                                    <option value="PENDING">Đang chờ</option>
+                                </select>
+                            </span>
+                        </label>
+                        <label class="history-filter-field history-time-field">
+                            <span>NHẬP GIÁ TRỊ</span>
+                            <input id="fromTime" type="text" autocomplete="off"
+                                aria-describedby="historyFilterError"
+                                title="Chỉ tìm trong ngày, phút hoặc giây đã nhập. Có thể dán thời gian vừa sao chép."
+                                placeholder="Nhập giá trị thời gian chuẩn form : YYYY-MM-DD hoặc YYYY-MM-DD HH:mm:ss">
+                        </label>
+                    </div>
+                </div>
+                <div class="history-filter-actions">
+                    <button class="history-search-button" id="searchHistory" type="submit">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m16 16 4 4"></path>
+                        </svg>
+                        Tìm kiếm
+                    </button>
+                    <button class="history-sort-button" id="sortHistory" type="button" aria-pressed="false"
+                        aria-label="Sắp xếp theo thời gian" title="Sắp xếp cũ nhất trước">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path d="M8 19V5m-4 4 4-4 4 4M16 5v14m-4-4 4 4 4-4"></path>
+                        </svg>
+                        Sắp xếp
+                    </button>
+                </div>
+                <p id="historyFilterError" class="history-filter-error" role="alert" hidden></p>
+            </form>
+        </section>
+
+        <section class="history-log-card" aria-label="Nhật ký hoạt động thiết bị">
+            <div class="history-table-wrapper">
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">TÊN NGƯỜI DÙNG</th>
+                            <th scope="col">TÊN THIẾT BỊ</th>
+                            <th scope="col">HÀNH ĐỘNG</th>
+                            <th scope="col">TRẠNG THÁI</th>
+                            <th scope="col">THỜI GIAN</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTableBody"></tbody>
+                </table>
+                <p id="historyEmptyState" class="history-empty-state" hidden>Không tìm thấy lịch sử phù hợp với bộ lọc.</p>
+            </div>
+            <footer class="history-log-footer">
+                <p id="historyResultSummary" role="status">Đang tải lịch sử...</p>
+                <nav id="historyPagination" class="table-pagination" aria-label="Phân trang lịch sử thiết bị"></nav>
+            </footer>
+        </section>
+    </main>
+
+    <script src="./js/auth.js?v=jwt-1"></script>
+    <script src="./js/app.js?v=jwt-1"></script>
+    <script src="./js/api.js?v=jwt-1"></script>
+    <script src="./js/pagination.js?v=fit-2"></script>
+    <script src="./js/timestamp-copy.js?v=1"></script>
+    <script src="./js/time-filter.js?v=1"></script>
+    <script src="./js/history.js?v=status-3"></script>
+</body>
+</html>

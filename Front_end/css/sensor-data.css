@@ -1,0 +1,391 @@
+.sensor-data-page {
+    --sensor-muted: #62626a;
+    --sensor-surface: rgba(255, 255, 255, 0.96);
+    background: #fbf8fa;
+}
+.sensor-filter-form {
+    display: grid;
+    grid-template-columns: minmax(0, 2.2fr) minmax(0, 1.05fr) minmax(110px, 0.5fr) minmax(120px, 0.9fr);
+    gap: 16px;
+    align-items: center;
+}
+
+.sensor-value-input,
+.sensor-filter-select select,
+.sensor-search-button,
+.sensor-sort-button {
+    width: 100%;
+    height: 54px;
+    border: 1px solid #e3e7ed;
+    border-radius: 9px;
+    font-family: "Inter", Arial, sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.sensor-value-input {
+    min-width: 0;
+    padding: 0 16px;
+    color: #334155;
+    background: #fff;
+}
+
+.sensor-value-input::placeholder {
+    color: #9baab7;
+    opacity: 1;
+}
+
+.sensor-filter-select {
+    position: relative;
+    min-width: 0;
+}
+
+.sensor-filter-select select {
+    appearance: none;
+    padding: 0 40px 0 16px;
+    color: #647888;
+    background: #fff;
+    cursor: pointer;
+}
+
+.sensor-filter-select > svg {
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    width: 15px;
+    height: 15px;
+    transform: translateY(-50%);
+    color: #8fa4b2;
+    pointer-events: none;
+}
+
+.sensor-search-button,
+.sensor-sort-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 0 14px;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background 150ms ease, border-color 150ms ease;
+}
+
+.sensor-filter-form .sensor-search-button {
+    border-color: #e3e7ed;
+    color: #647888;
+    background: #fff;
+    font: 400 16px "Inter", Arial, sans-serif;
+}
+
+.sensor-filter-form .sensor-sort-button {
+    color: #647888;
+    background: #fff;
+    font: 400 16px "Inter", Arial, sans-serif;
+}
+
+.sensor-search-button svg,
+.sensor-sort-button svg {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+}
+
+.sensor-filter-form .sensor-search-button:hover {
+    border-color: #b6d1e5;
+    color: #4f6575;
+    background: #fff;
+}
+
+.sensor-sort-button:hover,
+.sensor-sort-button[aria-pressed="true"] {
+    border-color: #b6d1e5;
+    background: #f1f7fc;
+}
+
+.sensor-filter-form input:focus-visible,
+.sensor-filter-form select:focus-visible,
+.sensor-filter-form button:focus-visible {
+    outline: 2px solid #3289c9;
+    outline-offset: 3px;
+}
+
+.sensor-value-input[aria-invalid="true"] {
+    border-color: #dc2626;
+}
+
+.sensor-filter-error {
+    grid-column: 1 / -1;
+    color: #dc2626;
+    font-size: 12px;
+    line-height: 19px;
+}
+.sensor-data-main {
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    min-height: 0;
+    padding-top: calc(var(--dash-header) + 20px);
+    padding-bottom: 14px;
+    overflow: hidden;
+    background: radial-gradient(circle at 48% 22%, rgba(255, 255, 255, 0.95), transparent 44%), #fbf8fa;
+}
+
+.sensor-data-heading {
+    flex: 0 0 auto;
+    margin-bottom: 12px;
+}
+
+.sensor-data-heading h1 {
+    color: #1d1c1e;
+    font-size: 29px;
+    line-height: 38px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.sensor-data-heading p {
+    margin-top: 4px;
+    color: #58575e;
+    font-size: 14px;
+    line-height: 22px;
+}
+
+.sensor-filter-card,
+.sensor-log-card {
+    border: 1px solid rgba(225, 220, 224, 0.72);
+    background: var(--sensor-surface);
+    box-shadow: 0 12px 28px rgba(47, 38, 45, 0.07);
+}
+
+.sensor-filter-card {
+    flex: 0 0 auto;
+    min-height: 0;
+    margin-bottom: 12px;
+    padding: 12px;
+    border-radius: 14px;
+}
+
+
+.sensor-log-card {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+    border-radius: 14px;
+}
+
+.sensor-log-header {
+    flex: 0 0 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+
+.sensor-log-title {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+}
+
+.sensor-log-title h2 {
+    color: #222124;
+    font-size: 17px;
+    line-height: 24px;
+    font-weight: 700;
+}
+
+.record-count {
+    display: inline-flex;
+    align-items: center;
+    min-height: 20px;
+    padding: 2px 11px;
+    border-radius: 999px;
+    color: #727078;
+    background: #e9e7e9;
+    font-family: "Roboto Mono", monospace;
+    font-size: 10px;
+    letter-spacing: 0.1px;
+}
+
+.more-button {
+    width: 30px;
+    height: 30px;
+    display: grid;
+    place-items: center;
+    border: 0;
+    color: #303036;
+    background: transparent;
+    cursor: pointer;
+}
+
+.more-button svg {
+    width: 18px;
+    height: 18px;
+}
+
+.sensor-table-wrapper {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.sensor-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.sensor-table th,
+.sensor-table td {
+    border-bottom: 1px solid #f0edef;
+    text-align: left;
+}
+
+.sensor-table th {
+    height: 28px;
+    padding: 0 20px;
+    color: #5d5b62;
+    background: #faf8f9;
+    font-size: 10px;
+    line-height: 14px;
+    font-weight: 600;
+}
+
+.sensor-table th:nth-child(1) { width: 15%; }
+.sensor-table th:nth-child(2) { width: 35%; }
+.sensor-table th:nth-child(3) { width: 12%; }
+.sensor-table th:nth-child(4) { width: 38%; }
+
+.sensor-table td {
+    height: 28px;
+    padding: 0 20px;
+    color: #27262a;
+    background: rgba(255, 255, 255, 0.62);
+    font-size: 12px;
+}
+
+.sensor-table td:first-child,
+.sensor-table td:last-child {
+    color: #74717a;
+    font-family: "Roboto Mono", monospace;
+    font-size: 10px;
+    letter-spacing: 0.35px;
+}
+
+.sensor-value-cell {
+    font-family: "Roboto Mono", monospace;
+    white-space: nowrap;
+}
+
+.sensor-value-cell strong {
+    color: #26252a;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.sensor-value-cell small {
+    margin-left: 4px;
+    color: #75727a;
+    font-size: 9px;
+}
+
+.value-column {
+    text-align: right !important;
+}
+
+.sensor-table td.value-column {
+    padding-right: 28px;
+}
+
+.sort-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    border: 0;
+    padding: 0;
+    color: inherit;
+    background: transparent;
+    font: inherit;
+    cursor: pointer;
+}
+
+.sort-button svg {
+    width: 13px;
+    height: 13px;
+    transition: transform 180ms ease;
+}
+
+.sort-button.ascending svg {
+    transform: rotate(180deg);
+}
+
+.empty-state {
+    padding: 42px 20px;
+    color: var(--sensor-muted);
+    text-align: center;
+    font-size: 13px;
+}
+
+.sensor-log-footer {
+    flex: 0 0 52px;
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 0 20px;
+    color: #5b5960;
+    font-size: 11px;
+}
+
+
+@media (max-width: 700px) {
+    .sensor-filter-form {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+
+    .sensor-value-input {
+        grid-column: 1 / -1;
+    }
+
+    .sensor-filter-select {
+        grid-column: 1 / -1;
+    }
+
+    .sensor-table {
+        min-width: 650px;
+    }
+
+    .sensor-log-footer {
+        align-items: flex-start;
+        flex-direction: column;
+        padding-block: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .sensor-value-input,
+    .sensor-filter-select select,
+    .sensor-filter-form .sensor-search-button,
+    .sensor-filter-form .sensor-sort-button {
+        height: 48px;
+        font-size: 14px;
+    }
+
+    .sensor-data-heading h1 {
+        font-size: 25px;
+    }
+
+    .sensor-log-title {
+        gap: 8px;
+    }
+
+    .record-count {
+        padding-inline: 7px;
+    }
+}

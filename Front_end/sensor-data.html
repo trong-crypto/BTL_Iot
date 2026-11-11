@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dữ liệu cảm biến | IoT Command Center</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./css/global.css?v=fit-2">
+    <link rel="stylesheet" href="./css/dashboard.css?v=fit-3">
+    <link rel="stylesheet" href="./css/sensor-data.css?v=fit-3">
+    <link rel="stylesheet" href="./css/pagination.css?v=fit-2">
+    <link rel="stylesheet" href="./css/timestamp-copy.css?v=1">
+</head>
+<body class="dashboard-page sensor-data-page">
+    <header class="topbar">
+        <a class="brand" href="./index.html">IoT Command Center</a>
+
+    </header>
+
+    <aside class="sidebar">
+        <nav class="sidebar-nav" aria-label="Điều hướng chính">
+            <a href="./index.html">Tổng quan</a>
+            <a href="./sensor-data.html" class="active" aria-current="page">Dữ liệu cảm biến</a>
+            <a href="./history.html">Lịch sử thiết bị</a>
+            <a href="./profile.html">Hồ sơ cá nhân</a>
+        </nav>
+    </aside>
+
+    <main class="dashboard-main sensor-data-main">
+        <section class="sensor-data-heading">
+            <h1>Dữ liệu Cảm biến</h1>
+            <p>Giám sát và phân tích luồng dữ liệu thời gian thực từ các điểm cuối IoT.</p>
+        </section>
+
+        <section class="sensor-filter-card" aria-label="Bộ lọc dữ liệu cảm biến">
+            <form id="sensorFilterForm" class="sensor-filter-form">
+                <input id="sensorSearchValue" class="sensor-value-input" type="search" inputmode="decimal"
+                    aria-label="Giá trị tìm kiếm" aria-describedby="sensorFilterError" placeholder="Nhập giá trị cần tìm..." autocomplete="off">
+
+                <span class="sensor-filter-select">
+                    <select id="sensorType" aria-label="Tiêu chí tìm kiếm">
+                        <option value="all">Tất cả</option>
+                        <option value="time">Thời gian</option>
+                        <option value="temperature">Nhiệt độ</option>
+                        <option value="humidity">Độ ẩm</option>
+                        <option value="light">Ánh sáng</option>
+                    </select>
+                    <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="m3 6 5 5 5-5z"></path></svg>
+                </span>
+
+                <button class="sensor-search-button" type="submit">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="10.5" cy="10.5" r="7"></circle><path d="m16 16 5 5"></path></svg>
+                    <span>Tìm kiếm</span>
+                </button>
+                <button id="sensorSortButton" class="sensor-sort-button" type="button" aria-label="Sắp xếp theo thời gian" aria-pressed="false" title="Sắp xếp thời gian tăng dần">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 19V5m-4 4 4-4 4 4M16 5v14m-4-4 4 4 4-4"></path></svg>
+                    <span>Sắp xếp</span>
+                </button>
+                <p id="sensorFilterError" class="sensor-filter-error" role="alert" hidden></p>
+            </form>
+        </section>
+
+        <section class="sensor-log-card" aria-labelledby="sensorLogTitle">
+            <header class="sensor-log-header">
+                <div class="sensor-log-title">
+                    <h2 id="sensorLogTitle">Nhật ký Dữ liệu</h2>
+                    <span id="recordCount" class="record-count">0 bản ghi</span>
+                </div>
+                <button class="more-button" type="button" aria-label="Tùy chọn nhật ký"><i data-lucide="more-vertical"></i></button>
+            </header>
+
+            <div class="sensor-table-wrapper">
+                <table class="sensor-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Loại cảm biến</th>
+                            <th scope="col" class="value-column">Giá trị</th>
+                            <th scope="col"><button id="sortByTime" class="sort-button" type="button" aria-label="Đảo thứ tự thời gian">Thời gian <i data-lucide="arrow-down"></i></button></th>
+                        </tr>
+                    </thead>
+                    <tbody id="sensorTableBody"></tbody>
+                </table>
+                <p id="emptyState" class="empty-state" hidden>Không tìm thấy dữ liệu phù hợp.</p>
+            </div>
+
+            <footer class="sensor-log-footer">
+                <p id="resultSummary" role="status">Đang tải dữ liệu...</p>
+                <nav id="pagination" class="table-pagination" aria-label="Phân trang dữ liệu cảm biến"></nav>
+            </footer>
+        </section>
+    </main>
+
+    <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+    <script src="./js/auth.js?v=jwt-1"></script>
+    <script src="./js/app.js?v=jwt-1"></script>
+    <script src="./js/api.js?v=jwt-1"></script>
+    <script src="./js/pagination.js?v=fit-2"></script>
+    <script src="./js/timestamp-copy.js?v=1"></script>
+    <script src="./js/time-filter.js?v=1"></script>
+    <script src="./js/charts.js?v=time-filter-3"></script>
+</body>
+</html>

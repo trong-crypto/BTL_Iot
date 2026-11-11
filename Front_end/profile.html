@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hồ sơ cá nhân | IoT Command Center</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./css/global.css?v=fit-2">
+    <link rel="stylesheet" href="./css/profile.css?v=fit-2">
+</head>
+<body class="profile-page">
+
+<header class="topbar">
+        <a class="brand" href="./index.html">IoT Command Center</a>
+    </header>
+
+    <aside class="sidebar">
+        <nav class="sidebar-nav" aria-label="Điều hướng chính">
+            <a href="./index.html">Tổng quan</a>
+            <a href="./sensor-data.html">Dữ liệu cảm biến</a>
+            <a href="./history.html">Lịch sử thiết bị</a>
+            <a href="./profile.html" class="active" aria-current="page">Hồ sơ cá nhân</a>
+        </nav>
+    </aside>
+    <main class="main-content profile-main">
+        <header class="profile-heading">
+            <h1>Hồ sơ cá nhân</h1>
+        </header>
+
+        <article class="profile-card" aria-labelledby="profileName">
+            <div class="profile-identity">
+                <img class="profile-avatar" src="./assets/images/Studio Portrait of a Young Man.png" alt="Ảnh đại diện Đào Viết Trọng">
+                <h2 id="profileName">Đào Viết Trọng</h2>
+                <h3 class="profile-role">B23DCCN846</h3>
+            </div>
+
+            <nav class="profile-links" aria-label="Liên kết cá nhân">
+                <a href="https://github.com/" target="_blank" rel="noopener noreferrer" aria-label="github.com (mở trong tab mới)">
+                    <span>github.com</span><span class="profile-link-arrow" aria-hidden="true">↗</span>
+                </a>
+                <a href="https://www.figma.com/design/gKhHShdkAtRzG4Frqg00hc/Untitled?node-id=0-1&amp;p=f" target="_blank" rel="noopener noreferrer" aria-label="Thiết kế Figma của dự án (mở trong tab mới)">
+                    <span>figma.com</span><span class="profile-link-arrow" aria-hidden="true">↗</span>
+                </a>
+                <a href="https://trong-crypto-3230310.postman.co/workspace/Trongj's-Workspace~dde41bfb-42b9-40d2-8111-dfd9508018ac/http-example/51876420-a53fa205-ecd2-4d8f-8405-85b180add40c?sideView=agentMode" target="_blank" rel="noopener noreferrer" aria-label="Workspace Postman của dự án (mở trong tab mới)">
+                    <span>postman.com</span><span class="profile-link-arrow" aria-hidden="true">↗</span>
+                </a>
+                <a href="https://drive.google.com/" target="_blank" rel="noopener noreferrer" aria-label="drive.google.com (mở trong tab mới)">
+                    <span>drive.google.com</span><span class="profile-link-arrow" aria-hidden="true">↗</span>
+                </a>
+            </nav>
+        </article>
+    </main>
+    <script src="./js/auth.js?v=jwt-1"></script>
+    <script src="./js/app.js?v=jwt-1"></script>
+</body>
+</html>

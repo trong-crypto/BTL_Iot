@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tổng Quan Hệ Thống | IoT Command Center</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./css/global.css?v=fit-2">
+    <link rel="stylesheet" href="./css/dashboard.css?v=fit-3">
+</head>
+<body class="dashboard-page">
+    <header class="topbar">
+        <a class="brand" href="./index.html">IoT Command Center</a>
+
+    </header>
+
+    <aside class="sidebar">
+        <nav class="sidebar-nav" aria-label="Điều hướng chính">
+            <a href="./index.html" class="active" aria-current="page">Tổng quan</a>
+            <a href="./sensor-data.html">Dữ liệu cảm biến</a>
+            <a href="./history.html">Lịch sử thiết bị</a>
+            <a href="./profile.html">Hồ sơ cá nhân</a>
+        </nav>
+    </aside>
+
+    <main class="dashboard-main">
+        <section class="dashboard-heading">
+            <h1>Tổng Quan Hệ Thống</h1>
+            <div class="system-health">
+                <span class="health-dot"></span>
+                <span>Đang kiểm tra kết nối...</span>
+            </div>
+        </section>
+
+        <section class="sensor-grid" aria-label="Thông số cảm biến">
+            <article class="sensor-card temperature-card">
+                <div class="sensor-label">
+                    <i data-lucide="thermometer"></i>
+                    <span>NHIỆT ĐỘ</span>
+                </div>
+                <div class="sensor-value">
+                    <strong id="temperatureValue">—</strong>
+                    <span>°C</span>
+                </div>
+                <div class="sensor-mini-space" aria-hidden="true"></div>
+            </article>
+
+            <article class="sensor-card humidity-card">
+                <div class="sensor-label">
+                    <i data-lucide="droplet"></i>
+                    <span>ĐỘ ẨM</span>
+                </div>
+                <div class="sensor-value">
+                    <strong id="humidityValue">—</strong>
+                    <span>%</span>
+                </div>
+                <div class="mini-area-chart" aria-hidden="true">
+                    <svg viewBox="0 0 280 40" preserveAspectRatio="none">
+                        <!-- <path d="M0 31 L55 27 L112 32 L170 18 L225 23 L280 8 L280 40 L0 40 Z" fill="rgba(6, 182, 212, 0.08)"></path> -->
+                        <!-- <path d="M0 39 L280 39" stroke="#06b6d4" stroke-width="2"></path> -->
+                    </svg>
+                </div>
+            </article>
+
+            <article class="sensor-card light-card">
+                <div class="sensor-label">
+                    <i data-lucide="sun"></i>
+                    <span>ÁNH SÁNG</span>
+                </div>
+                <div class="sensor-value">
+                    <strong id="lightValue">—</strong>
+                    <span>ADC</span>
+                </div>
+                <div class="sensor-mini-space" aria-hidden="true"></div>
+            </article>
+        </section>
+
+        <section class="dashboard-lower-grid">
+            <article class="dashboard-panel analytics-panel">
+                <div class="panel-header analytics-header">
+                    <h2>Dữ liệu cảm biến gần đây</h2>
+
+                    <div class="chart-toolbar">
+                        <div class="chart-legend" aria-label="Chọn cảm biến hiển thị trên biểu đồ">
+                            <button class="legend-item temperature-legend" type="button"
+                                data-dataset-index="0" aria-pressed="false" title="Chỉ hiển thị nhiệt độ">
+                                <span class="legend-line dashed"></span>Nhiệt độ
+                            </button>
+                            <button class="legend-item humidity-legend" type="button"
+                                data-dataset-index="1" aria-pressed="false" title="Chỉ hiển thị độ ẩm">
+                                <span class="legend-line"></span>Độ ẩm
+                            </button>
+                            <button class="legend-item light-legend" type="button"
+                                data-dataset-index="2" aria-pressed="false" title="Chỉ hiển thị ánh sáng">
+                                <span class="legend-line dashed"></span>Ánh sáng
+                            </button>
+                        </div>
+
+                        
+                    </div>
+                </div>
+
+                <div class="chart-box">
+                    <canvas id="realtimeChart"></canvas>
+                </div>
+            </article>
+
+            <article class="dashboard-panel devices-panel">
+                <div class="panel-header device-title">
+                    <i data-lucide="toggle-left"></i>
+                    <h2>Thiết Bị</h2>
+                </div>
+
+                <div class="device-list">
+                    <div class="device-row" data-device="lamp1">
+                        <div class="device-icon">
+                            <i data-lucide="lightbulb"></i>
+                        </div>
+                        <div class="device-info">
+                            <strong>Đèn 1</strong>
+                            <span class="device-status">Đang tải...</span>
+                        </div>
+                        <div class="device-actions">
+                            <button class="device-button on" type="button" data-action="on" disabled>Bật</button>
+                            <button class="device-button off" type="button" data-action="off" disabled>Tắt</button>
+                        </div>
+                    </div>
+
+                    <div class="device-row" data-device="lamp2">
+                        <div class="device-icon">
+                            <i data-lucide="lightbulb"></i>
+                        </div>
+                        <div class="device-info">
+                            <strong>Đèn 2</strong>
+                            <span class="device-status">Đang tải...</span>
+                        </div>
+                        <div class="device-actions">
+                            <button class="device-button on" type="button" data-action="on" disabled>Bật</button>
+                            <button class="device-button off" type="button" data-action="off" disabled>Tắt</button>
+                        </div>
+                    </div>
+                </div>
+                <p id="commandMessage" role="status" aria-live="polite"></p>
+            </article>
+        </section>
+    </main>
+
+    <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <script src="./js/auth.js?v=jwt-1"></script>
+    <script src="./js/app.js?v=jwt-1"></script>
+    <script src="./js/api.js?v=jwt-1"></script>
+    <script src="./js/vendor/stomp.umd.min.js"></script>
+    <script src="./js/realtime.js?v=jwt-1"></script>
+    <script src="./js/dashboard.js"></script>
+</body>
+</html>
